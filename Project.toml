@@ -1,0 +1,15 @@
+name = "SolarEnergeticParticle"
+uuid = "c65597a0-fc8f-4fb5-9f0a-4e6244d82c46"
+authors = ["Beforerr <zzj956959688@gmail.com> and contributors"]
+version = "0.1.0"
+
+[deps]
+Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
+Speasy = "09b745ad-c67d-442f-94a6-c7f4d1e4d861"
+
+[compat]
+julia = "1.10"
+Accessors = "0.1"
+DimensionalData = "0.29"
