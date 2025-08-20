@@ -5,12 +5,10 @@ DocMeta.setdocmeta!(SolarEnergeticParticle, :DocTestSetup, :(using SolarEnergeti
 
 makedocs(;
     modules=[SolarEnergeticParticle],
-    authors="Beforerr <zzj956959688@gmail.com> and contributors",
     sitename="SolarEnergeticParticle.jl",
     format=Documenter.HTML(;
         canonical="https://Beforerr.github.io/SolarEnergeticParticle.jl",
         edit_link="main",
-        assets=String[],
     ),
     pages=[
         "Home" => "index.md",
@@ -19,5 +17,5 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/Beforerr/SolarEnergeticParticle.jl",
-    devbranch="main",
+    push_preview = true
 )

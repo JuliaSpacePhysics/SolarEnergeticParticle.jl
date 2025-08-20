@@ -6,3 +6,6 @@ SpacePhysicsMakie = "0c28ffd8-ae30-4a56-b2e4-f8332c621ad2"
 Speasy = "09b745ad-c67d-442f-94a6-c7f4d1e4d861"
 TimeseriesUtilities = "31d49243-0742-49c1-b8d2-db113b74581e"
 VectorizedStatistics = "3b853605-1c98-4422-8364-4bd93ee0529e"
+
+[sources]
+SolarEnergeticParticle = { path = ".." }
