@@ -18,8 +18,14 @@ function selectcol(A, idxs)
     "LABL_PTR_1" in keys(new_metadata) && begin
         new_metadata["LABL_PTR_1"] = new_metadata["LABL_PTR_1"][idxs]
     end
-    "DEPEND_1" in keys(new_metadata) && begin
-        new_metadata["DEPEND_1"] = new_metadata["DEPEND_1"][idxs]
+    "DEPEND_1" in keys(new_metadata) && begin\
+        ax1 = new_metadata["DEPEND_1"]
+        "LABL_PTR_1" in keys(ax1.metadata) && begin
+            ax1_metadata = copy(ax1.metadata)
+            ax1_metadata["LABL_PTR_1"] = ax1_metadata["LABL_PTR_1"][idxs]
+            @reset ax1.metadata = ax1_metadata
+        end
+        new_metadata["DEPEND_1"] = ax1[idxs]
     end
     @reset A.data = selected_data
     @reset A.metadata = new_metadata

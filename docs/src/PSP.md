@@ -14,7 +14,7 @@ The PSP data loader provides access to energetic particle data from the **Integr
 
 List available datasets for PSP ISOIS
 
-```julia
+```@example psp
 using SolarEnergeticParticle: get_data, get_datasets
 
 datasets = get_datasets(:PSP, :ISOIS)
@@ -22,17 +22,17 @@ datasets = get_datasets(:PSP, :ISOIS)
 
 Get EPIHI data for a solar particle event
 
-```julia
+```@example psp
 dataset = "PSP_ISOIS-EPIHI_L2-HET-RATES60"
 tmin = "2021/10/9"
 tmax = "2021/10/10"
 data = get_data(dataset, tmin, tmax; verbose=true)
 
 # Or only get specific variables
-data = get_data(dataset, ("A_H_Flux", "B_H_Flux"), tmin, tmax)
+data = get_data(dataset, ("A_H_Flux", "A_Electrons_Rate"), tmin, tmax)
 ```
 
-```julia
+```@example psp
 # Print energy channel information
 foreach(println, data.A_H_Flux.metadata["LABL_PTR_1"])
 ```
@@ -43,7 +43,7 @@ foreach(println, data.A_H_Flux.metadata["LABL_PTR_1"])
 
 Here we plot the proton fluxes and electron rates of A side every 2 channels averaged over 10 minutes.
 
-```julia
+```@example psp
 using SpacePhysicsMakie, CairoMakie
 using TimeseriesUtilities, Dates
 using SolarEnergeticParticle: selectcol
@@ -52,7 +52,7 @@ begin
     tvars2plot = map([data.A_Electrons_Rate, data.A_H_Flux]) do x
         replace!(tmean(selectcol(x, isodd), Minute(10)), 0 => eps())
     end
-    f = tplot(tvars2plot; plottype=Stairs)
+    f = tplot(tvars2plot; plottype=Stairs, add_title=true)
     ylims!(f.axes[1], 1e-3, 1e0)
     ylims!(f.axes[2], 1e-3, 1e1)
     f
@@ -110,7 +110,3 @@ end
 fig = analyze_sep_event("2021/04/28", "2021/05/02")
 display(fig)
 ```
-
-## Notes
-
-- **Units**: Particle flux in units of 1/(cm²⋅s⋅sr⋅MeV)
