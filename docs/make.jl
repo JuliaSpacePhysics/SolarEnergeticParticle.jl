@@ -1,21 +1,23 @@
 using SolarEnergeticParticle
 using Documenter
 
-DocMeta.setdocmeta!(SolarEnergeticParticle, :DocTestSetup, :(using SolarEnergeticParticle); recursive=true)
-
 makedocs(;
     modules=[SolarEnergeticParticle],
     sitename="SolarEnergeticParticle.jl",
     format=Documenter.HTML(;
-        canonical="https://Beforerr.github.io/SolarEnergeticParticle.jl",
-        edit_link="main",
+        canonical="https://JuliaSpacePhysics.github.io/SolarEnergeticParticle.jl",
     ),
     pages=[
         "Home" => "index.md",
+        "Solar Orbiter" => "SolO.md",
+        "Parker Solar Probe" => "PSP.md",
+        "Solar and Heliospheric Observatory" => "SOHO.md",
+        "Solar TErrestrial RElations Observatory" => "STEREO.md",
+        "Wind" => "Wind.md",
     ],
 )
 
 deploydocs(;
-    repo="github.com/Beforerr/SolarEnergeticParticle.jl",
+    repo="github.com/JuliaSpacePhysics/SolarEnergeticParticle.jl",
     push_preview = true
 )
