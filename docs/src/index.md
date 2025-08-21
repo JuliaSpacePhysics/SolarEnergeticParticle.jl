@@ -9,6 +9,8 @@ Documentation for [SolarEnergeticParticle](https://github.com/Beforerr/SolarEner
 ```@index
 ```
 
+## API Reference
+
 ```@autodocs
 Modules = [SolarEnergeticParticle]
 ```
