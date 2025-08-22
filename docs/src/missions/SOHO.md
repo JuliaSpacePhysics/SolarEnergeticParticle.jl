@@ -1,4 +1,4 @@
-# SOHO (Solar and Heliospheric Observatory)
+# Solar and Heliospheric Observatory (SOHO)
 
 ## Overview
 
@@ -32,7 +32,6 @@ List available SOHO datasets:
 
 ```@example soho
 using SolarEnergeticParticle
-using SolarEnergeticParticle: select_channel
 
 datasets = get_datasets(:SOHO)
 ```

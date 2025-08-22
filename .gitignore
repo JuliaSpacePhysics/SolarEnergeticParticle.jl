@@ -6,5 +6,6 @@ Manifest*.toml
 /docs/build/
 serpentine
 SEPpy
+VDA
 .CondaPkg
 .vscode

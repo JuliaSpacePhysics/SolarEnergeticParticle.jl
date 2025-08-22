@@ -15,7 +15,7 @@ The PSP data loader provides access to energetic particle data from the **Integr
 List available datasets for PSP ISOIS
 
 ```@example psp
-using SolarEnergeticParticle: get_data, get_datasets
+using SolarEnergeticParticle
 
 datasets = get_datasets(:PSP, :ISOIS)
 ```
@@ -46,7 +46,6 @@ Here we plot the proton fluxes and electron rates of A side every 2 channels ave
 ```@example psp
 using SpacePhysicsMakie, CairoMakie
 using TimeseriesUtilities, Dates
-using SolarEnergeticParticle: select_channel
 
 begin
     tvars2plot = map([data.A_Electrons_Rate, data.A_H_Flux]) do x

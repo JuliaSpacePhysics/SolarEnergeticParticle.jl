@@ -1,4 +1,4 @@
-# Wind Spacecraft
+# Wind
 
 ## Overview
 
@@ -38,7 +38,6 @@ List available Wind datasets:
 
 ```@example wind
 using SolarEnergeticParticle
-using SolarEnergeticParticle: select_channel
 
 datasets = get_datasets(:WI, "3DP")
 ```

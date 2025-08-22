@@ -6,7 +6,6 @@ First, let's load the required packages and set up the analysis environment:
 
 ```@example onset
 using SolarEnergeticParticle
-using SolarEnergeticParticle: select_channel
 using Dates
 using SpacePhysicsMakie, CairoMakie
 ```

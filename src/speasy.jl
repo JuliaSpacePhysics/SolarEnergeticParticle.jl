@@ -8,6 +8,7 @@ function dimarrayify(x)
     end
     return DimArray(x)
 end
+dimarrayify(::Nothing) = nothing
 
 function speasy_load(dataset, vars, t0, t1; provider = :cda, kw...)
     vars = vars isa Union{String, Symbol} ? [vars] : vars

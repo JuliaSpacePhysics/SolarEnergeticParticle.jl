@@ -60,11 +60,47 @@ function _cusum_onset_detection(I, μ, σ, k, h, N)
 end
 
 """
-    find_onset(I, bg_timerange; kwargs...)
+    sigma_onset_detection(I, μ, σ; n = 2, N = nothing)
+    sigma_onset_detection(I, times, μ, σ; n = 2, N = nothing)
 
-Perform onset determination analysis on time series `I`.
+Detect onset time using n-sigma threshold method when intensity `I` exceeds `μ + n*σ` for `N` consecutive points.
+
+# Returns
+Named tuple with `time` and `N`.
 """
-function find_onset(I::AbstractVector, bg_timerange; kwargs...)
+function sigma_onset_detection(I, times, μ, σ; n = 2, N = nothing)
+    N = @something N round(Int, Minute(30) / resolution(times))
+    onset_idx = _sigma_onset_detection(I, μ + n * σ, N)
+    time = isnothing(onset_idx) ? nothing : times[onset_idx]
+    return (; time, N)
+end
+
+sigma_onset_detection(I, μ, σ; kw...) = sigma_onset_detection(I, times(I), μ, σ; kw...)
+
+function _sigma_onset_detection(I, I_threshold, N)
+    N_alert = 0
+    for i in 2:length(I)
+        N_alert = ifelse(I[i] > I_threshold, N_alert + 1, 0)
+        N_alert == N && return i - N
+    end
+    return nothing
+end
+
+"""
+    find_onset(I, bg_timerange; method = :cusum, kwargs...)
+
+Perform onset determination analysis on time series `I` using background statistics from `bg_timerange`.
+
+# Arguments
+- `method`: Detection method (`:cusum` or `:sigma`, default: `:cusum`)
+- `kwargs...`: Additional parameters passed to the detection method
+
+# Returns
+Named tuple with `onset_time`, `bg_timerange`, `bg_mean`, and `bg_std`.
+
+See also: [`cusum_onset_detection`](@ref), [`sigma_onset_detection`](@ref)
+"""
+function find_onset(I::AbstractVector, bg_timerange; method = :cusum, kwargs...)
     # Calculate background statistics
     bg_data = tview(I, bg_timerange)
     bg_mean = tmean(bg_data)
@@ -72,7 +108,9 @@ function find_onset(I::AbstractVector, bg_timerange; kwargs...)
 
     # Detect onset using CUSUM
     I_rest = tview(I, bg_timerange[end], times(I)[end]) # performance boost (only check rest of the data)
-    onset_time, = cusum_onset_detection(I_rest, bg_mean, bg_std; kwargs...)
+    f = method == :cusum ? cusum_onset_detection : sigma_onset_detection
+    bg_std == 0 && method == :cusum && @warn "Background standard deviation is zero, CUSUM onset detection is not applicable. Please use sigma onset detection instead"
+    onset_time, = f(I_rest, bg_mean, bg_std; kwargs...)
 
     return (; onset_time, bg_timerange, bg_mean, bg_std)
 end

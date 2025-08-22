@@ -12,7 +12,8 @@ makedocs(;
     pages = [
         "Home" => "index.md",
         "Missions" => list_pages("missions"),
-        "Onset Analysis" => "onset_analysis.md",
+        "Onset Analysis" => "onset.md",
+        "Velocity Dispersion Analysis" => "vda.md",
     ],
 )
 
