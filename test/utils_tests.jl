@@ -1,56 +1,25 @@
-using SolarEnergeticParticle
-using Test
-using DimensionalData
-
 @testitem "Column Selection Tests" begin
-    # Create mock DimArray for testing selectcol function
-    @testset "selectcol with indices" begin
-        # Create test data
-        test_data = rand(10, 6)  # 10 time points, 6 energy channels
-        test_metadata = Dict(
+    # Create mock DimArray for testing select_channel function
+    using DimensionalData
+
+    # Create test data
+    ch_ergs_1 = rand(Y(1:6))
+    ch_ergs_2 = rand(Ti(1:10), Y(1:6))
+
+    for channel_energies in (ch_ergs_1, ch_ergs_2), idxs in ([1, 3, 5], isodd)
+
+        metadata = Dict(
             "LABL_PTR_1" => ["Ch1", "Ch2", "Ch3", "Ch4", "Ch5", "Ch6"],
-            "DEPEND_1" => [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
+            "DEPEND_1" => channel_energies
         )
+        data = rand(Ti(1:10), Y(1:6); metadata)
 
-        # Create mock DimArray-like structure
-        mock_array = (
-            data=test_data,
-            metadata=test_metadata
-        )
-
-        # Test selectcol with specific indices
-        try
-            selected = SolarEnergeticParticle.selectcol(mock_array, [1, 3, 5])
-            @test size(selected.data, 2) == 3
-            @test selected.metadata["LABL_PTR_1"] == ["Ch1", "Ch3", "Ch5"]
-            @test selected.metadata["DEPEND_1"] == [1.0, 3.0, 5.0]
-            println("✓ selectcol with indices works correctly")
-        catch e
-            @test_skip "selectcol function not properly implemented: $e"
-        end
-    end
-
-    @testset "selectcol with predicate" begin
-        # Create test data
-        test_data = rand(10, 6)
-        test_metadata = Dict(
-            "LABL_PTR_1" => ["Ch1", "Ch2", "Ch3", "Ch4", "Ch5", "Ch6"],
-            "DEPEND_1" => [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
-        )
-
-        mock_array = (
-            data=test_data,
-            metadata=test_metadata
-        )
-
-        # Test selectcol with isodd predicate
-        try
-            selected = SolarEnergeticParticle.selectcol(mock_array, isodd)
-            @test size(selected.data, 2) == 3  # Channels 1, 3, 5
-            @test selected.metadata["LABL_PTR_1"] == ["Ch1", "Ch3", "Ch5"]
-            println("✓ selectcol with predicate works correctly")
-        catch e
-            @test_skip "selectcol with predicate not properly implemented: $e"
-        end
+        # Test select_channel with specific indices
+        selected = @test_nowarn select_channel(data, idxs)
+        @test size(selected.data, 2) == 3
+        @test selected.metadata["LABL_PTR_1"] == ["Ch1", "Ch3", "Ch5"]
+        selected_ch_ergs = selected.metadata["DEPEND_1"]
+        @test size(selected_ch_ergs, dimnum(selected_ch_ergs, Y)) == 3
+        @test selected_ch_ergs == channel_energies[Y([1, 3, 5])]
     end
 end

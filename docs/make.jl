@@ -1,23 +1,22 @@
 using SolarEnergeticParticle
 using Documenter
 
+list_pages(dir) = map(f -> "$dir/$f", readdir(joinpath(@__DIR__, "src", dir)))
+
 makedocs(;
-    modules=[SolarEnergeticParticle],
-    sitename="SolarEnergeticParticle.jl",
-    format=Documenter.HTML(;
-        canonical="https://JuliaSpacePhysics.github.io/SolarEnergeticParticle.jl",
+    modules = [SolarEnergeticParticle],
+    sitename = "SolarEnergeticParticle.jl",
+    format = Documenter.HTML(;
+        canonical = "https://JuliaSpacePhysics.github.io/SolarEnergeticParticle.jl",
     ),
-    pages=[
+    pages = [
         "Home" => "index.md",
-        "Solar Orbiter" => "SolO.md",
-        "Parker Solar Probe" => "PSP.md",
-        "Solar and Heliospheric Observatory" => "SOHO.md",
-        "Solar TErrestrial RElations Observatory" => "STEREO.md",
-        "Wind" => "Wind.md",
+        "Missions" => list_pages("missions"),
+        "Onset Analysis" => "onset_analysis.md",
     ],
 )
 
 deploydocs(;
-    repo="github.com/JuliaSpacePhysics/SolarEnergeticParticle.jl",
+    repo = "github.com/JuliaSpacePhysics/SolarEnergeticParticle.jl",
     push_preview = true
 )

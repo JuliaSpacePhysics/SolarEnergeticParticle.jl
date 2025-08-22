@@ -24,7 +24,7 @@ end
     @test !isempty(get_data("STA_L1_HET", tmin, tmax))
     # Solar Orbiter EPD-EPT
     @test !isempty(get_data("SOLO_L2_EPD-EPT-NORTH-RATES", tmin, tmax))
-    
+
 
     for mission in (:PSP, :SOHO, :WI, :STB, :STA, :SOLO)
         @test length(get_datasets(mission)) > 0
@@ -32,11 +32,20 @@ end
 end
 
 @testitem "SOHO Data Loading" begin
+    using Dates
     tmin = "2021/10/28T06"
-    tmax = "2021/10/28T07"
+    tmax = "2021/10/29"
 
     @test !isempty(get_data("SOHO_ERNE-HED_L2-1MIN", tmin, tmax))
     @test !isempty(get_data("SOHO_COSTEP-EPHIN_L3I-1MIN", tmin, tmax))
     @test !isempty(get_data("SOHO_ERNE-LED_L2-1MIN", tmin, tmax))
     @test !isempty(get_data("SOHO_CELIAS-PM_5MIN", tmin, tmax))
+
+    @testset "SOHO Onset Analysis" begin
+        data = get_data("SOHO_ERNE-HED_L2-1MIN", tmin, tmax)
+        background_range = (DateTime(2021, 10, 28, 10, 0, 0), DateTime(2021, 10, 28, 12, 0, 0))
+        I = select_channel(data.PH, 4)
+        @test find_onset(I, background_range).onset_time == DateTime("2021-10-28T16:57:17.639")
+        @test find_peak(I).time == DateTime("2021-10-28T22:54:00.905")
+    end
 end

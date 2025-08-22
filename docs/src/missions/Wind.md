@@ -15,6 +15,7 @@ The Wind data loader provides access to energetic particle data from the 3DP (3-
 ### 3DP (3-Dimensional Plasma and Energetic Particle Investigation)
 
 #### Electron Datasets
+
 - **SFSP**: Suprathermal electron omnidirectional fluxes (27-520 keV)
 - **SFPD**: Suprathermal electron energy-angle distributions (27-520 keV)
 - **ELSP**: Low energy electron omnidirectional (7-300 keV)
@@ -23,6 +24,7 @@ The Wind data loader provides access to energetic particle data from the 3DP (3-
 - **EHPD**: High energy electron energy-angle (100-3200 keV)
 
 #### Proton Datasets
+
 - **SOSP**: Suprathermal proton omnidirectional fluxes (70 keV - 6.8 MeV)
 - **SOPD**: Suprathermal proton energy-angle distributions (70 keV - 6.8 MeV)
 - **PLSP**: Low energy proton omnidirectional (30 keV - 2 MeV)
@@ -36,7 +38,7 @@ List available Wind datasets:
 
 ```@example wind
 using SolarEnergeticParticle
-using SolarEnergeticParticle: selectcol
+using SolarEnergeticParticle: select_channel
 
 datasets = get_datasets(:WI, "3DP")
 ```
