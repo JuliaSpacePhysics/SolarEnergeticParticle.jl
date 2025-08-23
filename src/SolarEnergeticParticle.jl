@@ -9,19 +9,21 @@ using TimeseriesUtilities
 export get_data, get_datasets
 export select_channel
 export find_onset, find_peak
+export vda
 
 include("types.jl")
 include("utils.jl")
 include("speasy.jl")
 include("onset.jl")
+include("vda.jl")
 
 get_mission(dataset) = first(eachsplit(dataset, "_"))
 
-spec2stack!(x::AbstractMatrix) = x.metadata["DISPLAY_TYPE"] = "stack_plot"
+spec2stack!(x) = x isa AbstractMatrix && (x.metadata["DISPLAY_TYPE"] = "stack_plot")
 
 function get_data(dataset, vars, t0, t1; stack_plot = true, kw...)
     mission = get_mission(dataset)
-    speasy = mission in ("WI", "STA", "STB") ? (; method = "API") : (;)
+    speasy = mission in ("WI", ) ? (; method = "API") : (;)
     data = speasy_load(dataset, vars, t0, t1; speasy..., kw...)
     stack_plot && foreach(spec2stack!, data)
     return data

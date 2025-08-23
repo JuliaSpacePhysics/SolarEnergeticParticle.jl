@@ -15,13 +15,18 @@ end
 
     @testset "PSP Data Loading" begin
         @test !isempty(get_data("PSP_ISOIS-EPIHI_L2-HET-RATES60", tmin, tmax))
-        @test_broken !isempty(get_data("PSP_ISOIS-EPILO_L2-PE", tmin, tmax))
+        @test_broken all(!isnothing, get_data("PSP_ISOIS-EPILO_L2-PE", tmin, tmax))
     end
 
     # Wind 3DP
-    @test !isempty(get_data("WI_SFSP_3DP", tmin, tmax))
-    # STEREO-A HET
-    @test !isempty(get_data("STA_L1_HET", tmin, tmax))
+    @test all(!isnothing, get_data("WI_SFSP_3DP", tmin, tmax))
+    @test_broken all(!isnothing, get_data("WI_SFSP_3DP", tmin, tmax; method = "BEST"))
+
+    # STEREO-A
+    @test all(!isnothing, get_data("STA_L1_HET", tmin, tmax))
+    @test all(!isnothing, get_data("STA_L1_LET", "H_unsec_flux", tmin, tmax))
+    @test all(!isnothing, get_data("STA_L1_SEPT", ("Spec_0_E", "Spec_0_NS"), tmin, tmax))
+
     # Solar Orbiter EPD-EPT
     @test !isempty(get_data("SOLO_L2_EPD-EPT-NORTH-RATES", tmin, tmax))
 
@@ -46,6 +51,9 @@ end
         background_range = (DateTime(2021, 10, 28, 10, 0, 0), DateTime(2021, 10, 28, 12, 0, 0))
         I = select_channel(data.PH, 4)
         @test find_onset(I, background_range).onset_time == DateTime("2021-10-28T16:57:17.639")
+        @test find_onset(I, background_range; method = :sigma).onset_time == DateTime("2021-10-28T17:03:17.358")
         @test find_peak(I).time == DateTime("2021-10-28T22:54:00.905")
+        vda_result = vda(data.PH, background_range)
+        SolarEnergeticParticle.vda_stat(vda_result)
     end
 end

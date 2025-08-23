@@ -1,4 +1,4 @@
-# STEREO (Solar TErrestrial RElations Observatory)
+# Solar TErrestrial RElations Observatory (STEREO)
 
 ## Overview
 
