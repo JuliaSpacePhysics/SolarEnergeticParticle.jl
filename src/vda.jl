@@ -14,7 +14,7 @@ elseif p == :electron
 end
 
 """
-    vda(times, energies::AbstractArray{<:Energy}; particle = :proton, mass = nothing)
+    vda(times, energies; particle = :proton, mass = nothing)
     vda(fluxes, background_timerange; onset = (;), kw...)
 
 Perform Velocity Dispersion Analysis (VDA) to determine solar particle release time ``t₀`` and path length ``s`` using onset `times` across different `energies`.
@@ -45,7 +45,7 @@ A named tuple with:
 
 See also: [`find_onset`](@ref)
 """
-function vda(times, energies::AbstractArray{<:Energy}; particle = :proton, mass = nothing)
+function vda(times, energies; particle = :proton, mass = nothing)
     # Remove invalid onset times
     valid_mask = @. !ismissing(times) && !isnothing(times)
     valid_onsets = times[valid_mask]
@@ -59,7 +59,7 @@ function vda(times, energies::AbstractArray{<:Energy}; particle = :proton, mass 
     inverse_betas = 1 ./ beta.(valid_energies, mass)
 
     # Convert onset times to timestamps (seconds since epoch)
-    timestamps = datetime2unix.(valid_onsets)
+    timestamps = @. _time2unix(valid_onsets)
 
     # Linear regression: t = t₀ + (s/c) * β⁻¹
     # where t₀ is release time, s/c is slope related to path length
@@ -83,7 +83,7 @@ function vda_stat(inverse_betas, times, slope, intercept)
     n_points = length(inverse_betas)
     X = [ones(n_points) inverse_betas]
     # Calculate residuals and covariance matrix
-    timestamps = datetime2unix.(times)
+    timestamps = _time2unix.(times)
     y_pred = X * [intercept, slope]
     residuals = timestamps - y_pred
     mse = sum(residuals .^ 2) / (n_points - 2)  # Mean squared error
@@ -105,12 +105,14 @@ end
 
 vda_stat(result) = vda_stat(values(result)[4:end]...)
 
-function vda(fluxes, background_range; onset = (;), kw...)
-    energies = parent(fluxes.metadata["DEPEND_1"])
-    N = size(fluxes, 2)
+function vda(fluxes::AbstractMatrix, background_range; dim = 2, onset = (;), kw...)
+    # energies = parent(fluxes.metadata["DEPEND_1"])
+    energies = unwrap(SDM.dim(fluxes, dim))
+    N = size(fluxes, dim)
     times = map(1:N) do channel
         F = select_channel(fluxes, channel)
         find_onset(F, background_range; onset...)[1]
     end
-    return vda(times, energies; kw...)
+    energies_u = energies .* Unitful.unit(energies)
+    return vda(times, energies_u; kw...)
 end

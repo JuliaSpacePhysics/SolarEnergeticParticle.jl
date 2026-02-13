@@ -5,13 +5,14 @@ using Dates
 import DimensionalData
 using DimensionalData: DimArray
 using TimeseriesUtilities
+using SpaceDataModel: dim, unwrap
+import SpaceDataModel as SDM
 
 export get_data, get_datasets
 export select_channel
 export find_onset, find_peak
 export vda
 
-include("types.jl")
 include("utils.jl")
 include("speasy.jl")
 include("onset.jl")
@@ -23,7 +24,7 @@ spec2stack!(x) = x isa AbstractMatrix && (x.metadata["DISPLAY_TYPE"] = "stack_pl
 
 function get_data(dataset, vars, t0, t1; stack_plot = true, kw...)
     mission = get_mission(dataset)
-    speasy = mission in ("WI", ) ? (; method = "API") : (;)
+    speasy = mission in ("WI",) ? (; method = "API") : (;)
     data = speasy_load(dataset, vars, t0, t1; speasy..., kw...)
     stack_plot && foreach(spec2stack!, data)
     return data
@@ -35,15 +36,16 @@ function get_data(dataset, t0, t1; verbose = false, kw...)
 end
 
 function get_datasets(mission, args...; kw...)
-    return Speasy.list_datasets(:cda, mission, args...; kw...)
+    return Speasy.find_datasets(:cda, mission, args...; kw...)
 end
+
+const DATASET_VARS = Dict(
+    "PSP_ISOIS-EPIHI_L2-HET-RATES60" => ["A_H_Flux", "B_H_Flux", "A_Electrons_Rate", "B_Electrons_Rate"],
+)
 
 function get_dataset_default_vars(dataset; verbose = false)
     params = Speasy.list_parameters(:cda, dataset)
     verbose && @info "Found $(length(params)) parameters for $dataset: $(params)"
-    DATASET_VARS = Dict(
-        "PSP_ISOIS-EPIHI_L2-HET-RATES60" => ["A_H_Flux", "B_H_Flux", "A_Electrons_Rate", "B_Electrons_Rate", "Quality_Flag"],
-    )
     default_params = get(DATASET_VARS, dataset, params)
     verbose && @info "Using default parameters $default_params for $dataset"
     return default_params

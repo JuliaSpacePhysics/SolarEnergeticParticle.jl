@@ -58,15 +58,14 @@ begin
 end
 ```
 
+<!-- 
 ## Example: Solar Particle Event Analysis
 
-```julia
 using SolarEnergeticParticle, CairoMakie, Statistics
 
 function analyze_sep_event(start_date, end_date)
     # Load PSP EPIHI data
-    result = psp_load("PSP_ISOIS-EPIHI_L2-HET-RATES60",
-                      start_date, end_date)
+    result = get_data("PSP_ISOIS-EPIHI_L2-HET-RATES60", start_date, end_date)
 
     # Calculate background levels (first 20% of data)
     n_background = div(nrow(result.data), 5)
@@ -106,6 +105,6 @@ function analyze_sep_event(start_date, end_date)
 end
 
 # Analyze April 2021 event
-fig = analyze_sep_event("2021/04/28", "2021/05/02")
-display(fig)
-```
+analyze_sep_event("2021/04/28", "2021/05/02")
+
+-->

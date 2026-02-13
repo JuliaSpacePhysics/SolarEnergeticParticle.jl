@@ -1,15 +1,12 @@
 [deps]
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 SolarEnergeticParticle = "c65597a0-fc8f-4fb5-9f0a-4e6244d82c46"
 SpacePhysicsMakie = "0c28ffd8-ae30-4a56-b2e4-f8332c621ad2"
+Speasy = "09b745ad-c67d-442f-94a6-c7f4d1e4d861"
 TimeseriesUtilities = "31d49243-0742-49c1-b8d2-db113b74581e"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
-[sources]
-SolarEnergeticParticle = {path = ".."}
-
 [compat]
-SpacePhysicsMakie = "0.1.3"
+SpacePhysicsMakie = "0.1.3, 0.2"

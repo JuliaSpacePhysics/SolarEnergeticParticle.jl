@@ -1,18 +1,13 @@
 # SolarEnergeticParticle.jl
 
-[![Documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaSpacePhysics.github.io/SolarEnergeticParticle.jl/dev/)
-
 [![Build Status](https://github.com/JuliaSpacePhysics/SolarEnergeticParticle.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/JuliaSpacePhysics/SolarEnergeticParticle.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/JuliaSpacePhysics/SolarEnergeticParticle.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaSpacePhysics/SolarEnergeticParticle.jl)
 
 A Julia package for loading and analyzing Solar Energetic Particle (SEP) data from multiple space missions.
 
-## Installation
+**Installation**: at the Julia REPL, run `using Pkg; Pkg.add("SolarEnergeticParticle")`
 
-```julia
-using Pkg
-Pkg.add("SolarEnergeticParticle")
-```
+**Documentation**: [![Dev](https://img.shields.io/badge/docs-dev-blue.svg?logo=julia)](https://JuliaSpacePhysics.github.io/SolarEnergeticParticle.jl/dev/)
 
 ## Quick Start
 

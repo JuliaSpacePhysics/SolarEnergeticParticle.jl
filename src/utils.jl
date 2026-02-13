@@ -37,11 +37,6 @@ function _select_channel(metadata::AbstractDict, idxs)
     "LABL_PTR_1" in keys(new_metadata) && begin
         new_metadata["LABL_PTR_1"] = new_metadata["LABL_PTR_1"][idxs]
     end
-    "DEPEND_1" in keys(new_metadata) && begin
-        ax1 = new_metadata["DEPEND_1"]
-        _idxs = idxs isa Number ? [idxs] : idxs # avoid just selecting a single channel for metadata as it will be a scalar
-        new_metadata["DEPEND_1"] = select_channel(ax1, _idxs)
-    end
     return new_metadata
 end
 
@@ -53,3 +48,5 @@ function sep_summary(data)
     end
     return
 end
+
+_time2unix(t) = datetime2unix(DateTime(t))
