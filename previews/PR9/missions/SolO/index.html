@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Solar Orbiter (SolO) · SolarEnergeticParticle.jl</title><meta name="title" content="Solar Orbiter (SolO) · SolarEnergeticParticle.jl"/><meta property="og:title" content="Solar Orbiter (SolO) · SolarEnergeticParticle.jl"/><meta property="twitter:title" content="Solar Orbiter (SolO) · SolarEnergeticParticle.jl"/><meta name="description" content="Documentation for SolarEnergeticParticle.jl."/><meta property="og:description" content="Documentation for SolarEnergeticParticle.jl."/><meta property="twitter:description" content="Documentation for SolarEnergeticParticle.jl."/><meta property="og:url" content="https://JuliaSpacePhysics.github.io/SolarEnergeticParticle.jl/missions/SolO/"/><meta property="twitter:url" content="https://JuliaSpacePhysics.github.io/SolarEnergeticParticle.jl/missions/SolO/"/><link rel="canonical" href="https://JuliaSpacePhysics.github.io/SolarEnergeticParticle.jl/missions/SolO/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">SolarEnergeticParticle.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Missions</span><ul><li><a class="tocitem" href="../PSP/">Parker Solar Probe (PSP)</a></li><li><a class="tocitem" href="../SOHO/">Solar and Heliospheric Observatory (SOHO)</a></li><li><a class="tocitem" href="../STEREO/">Solar TErrestrial RElations Observatory (STEREO)</a></li><li class="is-active"><a class="tocitem" href>Solar Orbiter (SolO)</a></li><li><a class="tocitem" href="../Wind/">Wind</a></li></ul></li><li><a class="tocitem" href="../../onset/">Onset Analysis</a></li><li><a class="tocitem" href="../../vda/">Velocity Dispersion Analysis</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Missions</a></li><li class="is-active"><a href>Solar Orbiter (SolO)</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Solar Orbiter (SolO)</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/JuliaSpacePhysics/SolarEnergeticParticle.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/JuliaSpacePhysics/SolarEnergeticParticle.jl/blob/main/docs/src/missions/SolO.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Solar-Orbiter-(SolO)"><a class="docs-heading-anchor" href="#Solar-Orbiter-(SolO)">Solar Orbiter (SolO)</a><a id="Solar-Orbiter-(SolO)-1"></a><a class="docs-heading-anchor-permalink" href="#Solar-Orbiter-(SolO)" title="Permalink"></a></h1><pre><code class="language-julia hljs">using SolarEnergeticParticle: get_data, get_datasets, select_channel
+
+get_datasets(:SOLO, :EPD, :EPT)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">23-element Vector{String}:
+ &quot;SOLO_L3_EPD-EPT-1DAY&quot;
+ &quot;SOLO_L3_EPD-EPT-1HOUR&quot;
+ &quot;SOLO_L3_EPD-EPT-1MIN&quot;
+ &quot;SOLO_L2_EPD-EPT-ASUN-BURST-ELE-CLOSE&quot;
+ &quot;SOLO_L2_EPD-EPT-ASUN-BURST-ION&quot;
+ &quot;SOLO_L2_EPD-EPT-ASUN-HCAD&quot;
+ &quot;SOLO_L2_EPD-EPT-ASUN-RATES&quot;
+ &quot;SOLO_LL02_EPD-EPT-ASUN-RATES&quot;
+ &quot;SOLO_L2_EPD-EPT-SUN-BURST-ELE-CLOSE&quot;
+ &quot;SOLO_L2_EPD-EPT-SUN-BURST-ION&quot;
+ ⋮
+ &quot;SOLO_L2_EPD-EPT-NORTH-BURST-ION&quot;
+ &quot;SOLO_L2_EPD-EPT-NORTH-HCAD&quot;
+ &quot;SOLO_L2_EPD-EPT-NORTH-RATES&quot;
+ &quot;SOLO_LL02_EPD-EPT-NORTH-RATES&quot;
+ &quot;SOLO_L2_EPD-EPT-SOUTH-BURST-ELE-CLOSE&quot;
+ &quot;SOLO_L2_EPD-EPT-SOUTH-BURST-ION&quot;
+ &quot;SOLO_L2_EPD-EPT-SOUTH-HCAD&quot;
+ &quot;SOLO_L2_EPD-EPT-SOUTH-RATES&quot;
+ &quot;SOLO_LL02_EPD-EPT-SOUTH-RATES&quot;</code></pre><pre><code class="language-julia hljs">dataset = &quot;SOLO_L2_EPD-EPT-SUN-RATES&quot;
+tmin = &quot;20201210T23&quot;
+tmax = &quot;20201211T12&quot;
+data_sun = get_data(dataset, tmin, tmax; verbose=true)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">(Ion_Flux = Float32[NaN 0.0 … 0.0 0.0; NaN 0.0 … 0.0 0.0; … ; NaN 0.0 … 0.0 0.0; NaN 0.0 … 0.0 0.0], Alpha_Flux = Float32[0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0; … ; 0.0 0.0 … 0.0 0.0; 0.0 0.0 … 0.0 0.0], Electron_Flux = Float32[NaN 2439.8752 … 50.48669 61.940506; NaN 609.9688 … 50.48669 61.940506; … ; NaN 1829.9065 … 0.0 61.940506; NaN 609.9688 … 151.46007 61.940506])</code></pre><pre><code class="language-julia hljs">using SpacePhysicsMakie, CairoMakie
+
+data_asun = get_data(&quot;SOLO_L2_EPD-EPT-ASUN-RATES&quot;, tmin, tmax)
+data_north = get_data(&quot;SOLO_L2_EPD-EPT-NORTH-RATES&quot;, tmin, tmax)
+data_south = get_data(&quot;SOLO_L2_EPD-EPT-SOUTH-RATES&quot;, tmin, tmax)
+
+begin
+    tvars2plot = map([data_sun.Electron_Flux, data_asun.Electron_Flux, data_north.Electron_Flux, data_south.Electron_Flux]) do x
+        replace!(select_channel(x, 1:4:20), 0 =&gt; eps())
+    end
+    f = tplot(tvars2plot; plottype=Stairs)
+    ylims!.(f.axes, 5e1, 5e5)
+    f
+end</code></pre><img src="aee66f73.png" alt="Example block output"/><p>Plot the 6th energy channel of electron flux for different views</p><pre><code class="language-julia hljs">using SpacePhysicsMakie, CairoMakie
+
+begin
+    tvars2plot = map([data_sun.Electron_Flux, data_asun.Electron_Flux, data_north.Electron_Flux, data_south.Electron_Flux]) do x
+        replace!(select_channel(x, 6), 0 =&gt; eps())
+    end
+    for i in 1:4
+        tvars2plot[i].metadata[:labels] = [&quot;Sun&quot;, &quot;Anti-Sun&quot;, &quot;North&quot;, &quot;South&quot;][i]
+    end
+    f = tplot((tvars2plot,))
+    ylims!(5e1, 5e5)
+    f
+end</code></pre><img src="c2be76ec.png" alt="Example block output"/></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../STEREO/">« Solar TErrestrial RElations Observatory (STEREO)</a><a class="docs-footer-nextpage" href="../Wind/">Wind »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Saturday 14 February 2026 18:01">Saturday 14 February 2026</span>. Using Julia version 1.12.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
