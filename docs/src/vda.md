@@ -51,19 +51,16 @@ println("Path length: $(round(vda_proton.path_length_au, digits=2)) AU")
 
 ```@example vda
 function plot_vda_analysis!(ax, vda_result)
-    onsets = vda_result.onset_times
-    energies = vda_result.energies
-
+    onsets = DateTime.(vda_result.onset_times)
     release_time = vda_result.release_time
 
     # Plot data points
     scatter!(ax, vda_result.inverse_betas, onsets; label="Observed Onsets")
 
     # Plot linear fit
-    fit_times = [unix2datetime(vda_result.intercept + vda_result.slope * inv_beta)
-                 for inv_beta in vda_result.inverse_betas]
+    fit_times = @. unix2datetime(vda_result.intercept + vda_result.slope * vda_result.inverse_betas)
     lines!(ax, vda_result.inverse_betas, fit_times; linewidth=3, label="Linear Fit (Path Length: $(round(vda_result.path_length_au, digits=2)) AU)")
-    # Add release time line
+    # # Add release time line
     hlines!(ax, Dates.value(release_time), linestyle=:dash, label="Release Time $release_time")
 end
 
@@ -82,7 +79,6 @@ ax = Axis(fig[1, 1],
             ylabel="Onset Time",
             title="SOHO ERNE SEP Event - October 28, 2021")
 plot_vda_analysis!(ax, vda_proton)
-
 fig
 ```
 

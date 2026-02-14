@@ -20,7 +20,7 @@ end
 
     # Wind 3DP
     @test all(!isnothing, get_data("WI_SFSP_3DP", tmin, tmax))
-    @test_broken all(!isnothing, get_data("WI_SFSP_3DP", tmin, tmax; method = "BEST"))
+    @test all(!isnothing, get_data("WI_SFSP_3DP", tmin, tmax; method = "BEST"))
 
     # STEREO-A
     @test all(!isnothing, get_data("STA_L1_HET", tmin, tmax))
