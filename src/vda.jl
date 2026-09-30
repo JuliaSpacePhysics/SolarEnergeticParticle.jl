@@ -48,7 +48,7 @@ See also: [`find_onset`](@ref)
 function vda(times, energies::AbstractArray{<:Energy}; particle = :proton, mass = nothing)
     # Remove invalid onset times
     valid_mask = @. !ismissing(times) && !isnothing(times)
-    valid_onsets = times[valid_mask]
+    valid_onsets = DateTime.(times[valid_mask])
     valid_energies = energies[valid_mask]
 
     n_points = length(valid_onsets)

@@ -34,15 +34,13 @@ function get_data(dataset, t0, t1; verbose = false, kw...)
     return get_data(dataset, vars, t0, t1; kw...)
 end
 
-function get_datasets(mission, args...; kw...)
-    return Speasy.list_datasets(:cda, mission, args...; kw...)
-end
+get_datasets(mission, args...) = Speasy.find_datasets(:cda, string(mission), args...)
 
 function get_dataset_default_vars(dataset; verbose = false)
     params = Speasy.list_parameters(:cda, dataset)
     verbose && @info "Found $(length(params)) parameters for $dataset: $(params)"
     DATASET_VARS = Dict(
-        "PSP_ISOIS-EPIHI_L2-HET-RATES60" => ["A_H_Flux", "B_H_Flux", "A_Electrons_Rate", "B_Electrons_Rate", "Quality_Flag"],
+        "PSP_ISOIS-EPIHI_L2-HET-RATES60" => ["A_H_Flux", "B_H_Flux", "A_Electrons_Rate", "B_Electrons_Rate"],
     )
     default_params = get(DATASET_VARS, dataset, params)
     verbose && @info "Using default parameters $default_params for $dataset"

@@ -2,9 +2,12 @@
 Interface to Speasy.jl for accessing space physics data from various data providers.
 """
 
+# Speasy keeps DEPEND_1 as the axis variable name; downstream code (`vda`, `select_channel`) expects the axis values.
 function dimarrayify(x)
-    "DEPEND_1" in keys(x.metadata) && begin
-        x.metadata["DEPEND_1"] = DimArray(x.metadata["DEPEND_1"])
+    if length(x.dims) >= 2 && x.dims[2] isa Speasy.VariableAxis
+        ax = parent(x.dims[2]) * Unitful.unit(x.dims[2])
+        axdims = ndims(ax) == 1 ? (DimensionalData.Y(),) : (DimensionalData.Ti(), DimensionalData.Y())
+        x.metadata["DEPEND_1"] = DimArray(ax, axdims)
     end
     return DimArray(x)
 end
