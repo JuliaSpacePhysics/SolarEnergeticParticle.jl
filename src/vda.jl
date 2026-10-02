@@ -59,7 +59,7 @@ function vda(times, energies::AbstractArray{<:Energy}; particle = :proton, mass 
     inverse_betas = 1 ./ beta.(valid_energies, mass)
 
     # Convert onset times to timestamps (seconds since epoch)
-    timestamps = datetime2unix.(valid_onsets)
+    timestamps = _unix.(valid_onsets)
 
     # Linear regression: t = t₀ + (s/c) * β⁻¹
     # where t₀ is release time, s/c is slope related to path length
@@ -83,7 +83,7 @@ function vda_stat(inverse_betas, times, slope, intercept)
     n_points = length(inverse_betas)
     X = [ones(n_points) inverse_betas]
     # Calculate residuals and covariance matrix
-    timestamps = datetime2unix.(times)
+    timestamps = _unix.(times)
     y_pred = X * [intercept, slope]
     residuals = timestamps - y_pred
     mse = sum(residuals .^ 2) / (n_points - 2)  # Mean squared error
@@ -114,3 +114,5 @@ function vda(fluxes, background_range; onset = (;), kw...)
     end
     return vda(times, energies; kw...)
 end
+
+_unix(t) = (t - DateTime(1970)) / Second(1)
