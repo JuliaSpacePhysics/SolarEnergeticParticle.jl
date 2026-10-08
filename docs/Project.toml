@@ -12,4 +12,4 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 SolarEnergeticParticle = {path = ".."}
 
 [compat]
-SpacePhysicsMakie = "0.1.3"
+SpacePhysicsMakie = "0.4"
