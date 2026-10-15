@@ -1,49 +1,41 @@
 # Solar Orbiter (SolO)
 
-```@example solo
-using SolarEnergeticParticle: get_data, get_datasets, select_channel
+Energetic Particle Detector (EPD) data through [CDAWeb.jl](https://github.com/JuliaSpacePhysics/CDAWeb.jl).
 
-get_datasets(:SOLO, :EPD, :EPT)
+```@example solo
+using CDAWeb
+get_datasets("SOLO", "EPD", "EPT")
 ```
 
+EPT electron fluxes in its four viewing directions:
+
 ```@example solo
-dataset = "SOLO_L2_EPD-EPT-SUN-RATES"
-tmin = "20201210T23"
-tmax = "20201211T12"
-data_sun = get_data(dataset, tmin, tmax; verbose=true)
+tmin, tmax = "2020-12-10T23", "2020-12-11T12"
+views = ("SUN", "ASUN", "NORTH", "SOUTH")
+fluxes = [CDAWeb.Dataset("SOLO_L2_EPD-EPT-$(v)-RATES")["Electron_Flux"](tmin, tmax) for v in views]
+first(fluxes)
 ```
 
 ```@example solo
 using SpacePhysicsMakie, CairoMakie
+using SpaceDataModel: DataVariable
 
-data_asun = get_data("SOLO_L2_EPD-EPT-ASUN-RATES", tmin, tmax)
-data_north = get_data("SOLO_L2_EPD-EPT-NORTH-RATES", tmin, tmax)
-data_south = get_data("SOLO_L2_EPD-EPT-SOUTH-RATES", tmin, tmax)
-
-begin
-    tvars2plot = map([data_sun.Electron_Flux, data_asun.Electron_Flux, data_north.Electron_Flux, data_south.Electron_Flux]) do x
-        replace!(select_channel(x, 1:4:20), 0 => eps())
-    end
-    f = tplot(tvars2plot; plottype=Stairs)
-    ylims!.(f.axes, 5e1, 5e5)
-    f
+# indexing a file variable gives a plain array; a `DataVariable` keeps times and coordinates
+f = Figure()
+for (i, x) in enumerate(fluxes)
+    linesplot(f[i, 1], replace(DataVariable(x)[1:4:20, :], 0 => NaN))  # zeros cannot show on log axes
 end
+f
 ```
 
-Plot the 6th energy channel of electron flux for different views
+Channel 6 from every direction:
 
 ```@example solo
-using SpacePhysicsMakie, CairoMakie
-
-begin
-    tvars2plot = map([data_sun.Electron_Flux, data_asun.Electron_Flux, data_north.Electron_Flux, data_south.Electron_Flux]) do x
-        replace!(select_channel(x, 6), 0 => eps())
-    end
-    for i in 1:4
-        tvars2plot[i].metadata[:labels] = ["Sun", "Anti-Sun", "North", "South"][i]
-    end
-    f = tplot((tvars2plot,))
-    ylims!(5e1, 5e5)
-    f
+f = Figure()
+ax = Axis(f[1, 1]; yscale = log10)
+for (v, x) in zip(views, fluxes)
+    linesplot!(ax, replace(DataVariable(x)[6, :], 0 => NaN); label = v)
 end
+axislegend(ax)
+f
 ```

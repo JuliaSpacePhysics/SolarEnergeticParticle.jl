@@ -2,29 +2,30 @@
 CurrentModule = SolarEnergeticParticle
 ```
 
-# SolarEnergeticParticle
-
-A Julia package for loading and analyzing Solar Energetic Particle (SEP) data from multiple space missions.
+```@docs
+SolarEnergeticParticle
+```
 
 ## Tutorials
 
-- [Onset Analysis](onset.md) - CUSUM-based onset detection
-- [Velocity Dispersion Analysis (VDA)](vda.md) - Determine particle release times and path lengths
+- [Onset Analysis](onset.md): CUSUM and n-sigma onset determination
+- [Velocity Dispersion Analysis (VDA)](vda.md): particle release times and path lengths
 
-## Mission support
+## Missions
 
-In theory, any dataset available in CDAWeb is supported. The following missions are tested and verified.
+Any CDAWeb dataset loads with [CDAWeb.jl](https://github.com/JuliaSpacePhysics/CDAWeb.jl); these pages show SEP instruments of
 
 - [Parker Solar Probe (PSP)](missions/PSP.md)
-- [SOHO](missions/SOHO.md) 
+- [Solar Orbiter (SolO)](missions/SolO.md)
+- [SOHO](missions/SOHO.md)
 - [STEREO](missions/STEREO.md)
 - [Wind](missions/Wind.md)
 
-```@index
-```
-
 ## API Reference
 
-```@autodocs
-Modules = [SolarEnergeticParticle]
+```@docs
+find_onset
+vda
+CUSUM
+NSigma
 ```

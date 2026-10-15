@@ -2,13 +2,13 @@
 
 ## Overview
 
-The Wind data loader provides access to energetic particle data from the 3DP (3-Dimensional Plasma and Energetic Particle Investigation) instrument aboard the Wind spacecraft.
+Energetic particle data come from the 3DP (3-Dimensional Plasma and Energetic Particle Investigation) instrument aboard the Wind spacecraft.
 
 ### References
 
 - Wind Mission: [Wind Spacecraft](https://wind.nasa.gov/)
 - 3DP Instrument: [3-Dimensional Plasma and Energetic Particle Investigation](https://wind.nasa.gov/3dp.php)
-- Data Access: Via [CDAWeb](https://cdaweb.gsfc.nasa.gov/) through `Speasy.jl`
+- Data Access: [CDAWeb](https://cdaweb.gsfc.nasa.gov/) through [CDAWeb.jl](https://github.com/JuliaSpacePhysics/CDAWeb.jl)
 
 ## Supported Instruments
 
@@ -34,29 +34,20 @@ The Wind data loader provides access to energetic particle data from the 3DP (3-
 
 ## Basic Usage
 
-List available Wind datasets:
-
 ```@example wind
-using SolarEnergeticParticle
-
-datasets = get_datasets(:WI, "3DP")
+using CDAWeb
+get_datasets("WI", "3DP")
 ```
 
-Load Wind 3DP data:
+Wind 3DP files lack the ISTP time attributes, so `direct = true` fetches them through CDAWeb's subsetting service:
 
 ```@example wind
-# Suprathermal electron data
-dataset = "WI_SFSP_3DP"
-tmin = "2021/10/28T06"
-tmax = "2021/10/29T12"
-data = get_data(dataset, tmin, tmax; verbose=true)
+sfsp = CDAWeb.Dataset("WI_SFSP_3DP"; direct = true)
+flux = sfsp["FLUX"]("2021-10-28T06", "2021-10-29T12")
 ```
 
 ```@example wind
 using SpacePhysicsMakie, CairoMakie
 
-tvars2plot = replace!(data.FLUX, 0 => eps())
-f = tplot(tvars2plot; plottype=Stairs)
-ylims!.(f.axes, 5e-6, 8e-2)
-f
+tplot(flux)
 ```
