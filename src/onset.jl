@@ -1,116 +1,93 @@
-using TimeseriesUtilities: times, resolution
-
-targmax(I) = times(I)[argmax(I)]
-
 """
-    find_peak(I)
+    CUSUM(; n = 2, k = nothing, h = nothing)
 
-Find the peak time and value of a time series `I`.
-"""
-function find_peak(I)
-    peak_idx = argmax(I)
-    return (; time = times(I)[peak_idx], value = I[peak_idx])
-end
-
-"""
-    cusum_onset_detection(I, μ, σ; h = nothing, k = nothing, n = 2, N = nothing)
-    cusum_onset_detection(I, times, μ, σ; kw...)
-
-Detect onset time using Poisson-CUSUM (Cumulative Sum) algorithm, where ``I`` is the (intensity) time series, and ``μ`` and ``σ`` are the mean and standard deviation of the background, `k` is the control parameter.
-
-The CUSUM function ``S`` for each timestamp for the standardized intensity ``I_z = \\frac{I-μ}{σ}`` was then calculated as follows: 
+Poisson-CUSUM warnings of intensity `I` over background `bg` with mean `μ` and standard deviation `σ`.
+The CUSUM function of the standardized intensity ``I_z = (I - μ) / σ`` is
 
 ```math
-S[i] = \\max(0, I_z[i] - k + S[i-1])
+S_i = \\max(0, I_{z,i} - k + S_{i-1}), \\quad S_1 = 0
 ```
 
-where ``S[0] = 0``. When ``S`` exceeded the hastiness threshold ``h``, a warning signal was given. After `N` consecutive warning signals, an event was found and the first timestamp of these consecutive warning signals is identified as the onset time. 
+and each ``S_i > h`` is a warning.
 
-Note that:
-- ``μ`` and ``σ`` are used to calculate the control parameter ``k = \\frac{n}{\\ln(μ + n σ) - \\ln(μ)}`` when `k` is not specified.
-- ``n`` is a coefficient that was usually set to 2 and the control parameter ``k`` was rounded to the nearest integer value when ``k>1``. 
-- The hastiness threshold ``h`` was set to 1 when ``k <= 1`` and ``h = 2`` otherwise (followed the practice introduced by Huttunen-Heikinmaa et al. 2005). 
-- `N` are suggested to correspond to 30 minutes of threshold-exceeding intensity.
+- ``k = n / (\\ln(μ + nσ) - \\ln μ)`` unless given, rounded to the nearest integer when ``k > 1``.
+- ``h = 1`` when ``k ≤ 1``, else ``2`` (Huttunen-Heikinmaa et al. 2005), unless given.
 """
-function cusum_onset_detection(I, times, μ, σ; h = nothing, k = nothing, n = 2, N = nothing)
-    # Calculate control parameter k
-    k_raw = something(k, n / (log(μ + n * σ) - log(μ)))
-    k = k_raw > 1 ? round(Int, k_raw) : k_raw
-    # Set hastiness threshold h
-    h = something(h, ifelse(k <= 1, 1, 2))
-    N = @something N round(Int, Minute(30) / resolution(times))
-    onset_idx = _cusum_onset_detection(I, μ, σ, k, h, N)
-
-    time = isnothing(onset_idx) ? nothing : times[onset_idx]
-    return (; time, k, h, N)
+Base.@kwdef struct CUSUM{N, K, H}
+    n::N = 2
+    k::K = nothing
+    h::H = nothing
 end
 
-cusum_onset_detection(I, μ, σ; kw...) = cusum_onset_detection(I, times(I), μ, σ; kw...)
+function (m::CUSUM)(bg, I)
+    μ, σ = mean(bg), std(bg)
+    warnings = fill!(similar(I, Bool), false)
+    isfinite(σ) && σ > 0 || return warnings
+    k, h = _cusum_parameters(m, μ, σ)
+    a, b = inv(σ), μ / σ + k  # Iz - k = a I - b
+    S = 0.0
+    for i in (firstindex(I) + 1):lastindex(I)
+        S = max(0.0, S + muladd(I[i], a, -b))
+        warnings[i] = S > h
+    end
+    return warnings
+end
 
-function _cusum_onset_detection(I, μ, σ, k, h, N)
-    S = 0
-    N_alert = 0
-    for i in 2:length(I)
-        I_z = (I[i] - μ) / σ
-        S = max(0, I_z - k + S)
-        N_alert = ifelse(S > h, N_alert + 1, 0)
-        N_alert == N && return i - N
+function _cusum_parameters(m, μ, σ)
+    k = @something m.k begin
+        μ > 0 || throw(ArgumentError("the default CUSUM `k` needs a positive background mean, got μ = $μ; pass `k` or use `NSigma()`"))
+        m.n / (log(μ + m.n * σ) - log(μ))
+    end
+    k = k > 1 ? round(k) : float(k)
+    return k, @something(m.h, k <= 1 ? 1 : 2)
+end
+
+"""
+    NSigma(; n = 2)
+
+Warnings where intensity `I` exceeds the background mean plus `n` standard deviations.
+"""
+Base.@kwdef struct NSigma{N}
+    n::N = 2
+end
+
+(m::NSigma)(bg, I) = I .> mean(bg) + m.n * std(bg)
+
+"""
+    find_onset([f = CUSUM()], x, (t0, t1); N = Minute(30), dim = nothing)
+"""
+function find_onset(f, x, bg; N = Minute(30), dim = nothing)
+    d = TimeseriesUtilities.resolve_dim(x, dim)
+    t = times(x, d)
+    t0, t1 = _time.(bg)
+    ibg = searchsortedfirst(t, t0):searchsortedlast(t, t1)
+    isempty(ibg) && throw(ArgumentError("no samples in the background interval $(repr(bg))"))
+    rest = (last(ibg) + 1):lastindex(t)
+    length(rest) < 2 && throw(ArgumentError("onset search needs at least 2 samples after the background interval, got $(length(rest))"))
+    t_rest = view(t, rest)
+    N = _samples(N, t_rest)
+    return tstat(unwrap(x); dim = d) do I
+        b = filter(!isnan, view(I, ibg))
+        valid = findall(!isnan, view(I, rest))
+        time = length(valid) < 2 ? nothing : _onset_time(f(b, I[rest[valid]]), view(t_rest, valid), N)
+        (; time, N, bg_mean = mean(b), bg_std = std(b))
+    end
+end
+
+find_onset(x, bg; kw...) = find_onset(CUSUM(), x, bg; kw...)
+
+# As SEPpy's `onset_determination`, the first sample only anchors the onset: runs start at the second.
+function _onset_time(warnings, t, N)
+    n = 0
+    for i in (firstindex(warnings) + 1):lastindex(warnings)
+        n = warnings[i] ? n + 1 : 0
+        n == N && return t[i - N]
     end
     return nothing
 end
 
-"""
-    sigma_onset_detection(I, μ, σ; n = 2, N = nothing)
-    sigma_onset_detection(I, times, μ, σ; n = 2, N = nothing)
+_samples(N::Integer, t) = N
+_samples(N::Period, t) = max(1, round(Int, N / cadence(t)))
 
-Detect onset time using n-sigma threshold method when intensity `I` exceeds `μ + n*σ` for `N` consecutive points.
-
-# Returns
-Named tuple with `time` and `N`.
-"""
-function sigma_onset_detection(I, times, μ, σ; n = 2, N = nothing)
-    N = @something N round(Int, Minute(30) / resolution(times))
-    onset_idx = _sigma_onset_detection(I, μ + n * σ, N)
-    time = isnothing(onset_idx) ? nothing : times[onset_idx]
-    return (; time, N)
-end
-
-sigma_onset_detection(I, μ, σ; kw...) = sigma_onset_detection(I, times(I), μ, σ; kw...)
-
-function _sigma_onset_detection(I, I_threshold, N)
-    N_alert = 0
-    for i in 2:length(I)
-        N_alert = ifelse(I[i] > I_threshold, N_alert + 1, 0)
-        N_alert == N && return i - N
-    end
-    return nothing
-end
-
-"""
-    find_onset(I, bg_timerange; method = :cusum, kwargs...)
-
-Perform onset determination analysis on time series `I` using background statistics from `bg_timerange`.
-
-# Arguments
-- `method`: Detection method (`:cusum` or `:sigma`, default: `:cusum`)
-- `kwargs...`: Additional parameters passed to the detection method
-
-# Returns
-Named tuple with `onset_time`, `bg_timerange`, `bg_mean`, and `bg_std`.
-
-See also: [`cusum_onset_detection`](@ref), [`sigma_onset_detection`](@ref)
-"""
-function find_onset(I::AbstractVector, bg_timerange; method = :cusum, kwargs...)
-    # Calculate background statistics
-    bg_data = tview(I, bg_timerange)
-    bg_mean = tmean(bg_data)
-    bg_std = tstd(bg_data)
-
-    # Detect onset using CUSUM
-    I_rest = tview(I, bg_timerange[end], times(I)[end]) # performance boost (only check rest of the data)
-    f = method == :cusum ? cusum_onset_detection : sigma_onset_detection
-    bg_std == 0 && method == :cusum && @warn "Background standard deviation is zero, CUSUM onset detection is not applicable. Please use sigma onset detection instead"
-    onset_time, = f(I_rest, bg_mean, bg_std; kwargs...)
-
-    return (; onset_time, bg_timerange, bg_mean, bg_std)
-end
+_time(t::AbstractString) = DateTime(t)
+_time(t) = t
