@@ -2,12 +2,12 @@
 
 ## Overview
 
-The SOHO data loader provides access to energetic particle data from multiple instruments aboard the Solar and Heliospheric Observatory spacecraft.
+Energetic particle data come from multiple instruments aboard the Solar and Heliospheric Observatory spacecraft.
 
 ### References
 
 - SOHO Mission: [Solar and Heliospheric Observatory](https://soho.esac.esa.int/)
-- Data Access: Via [CDAWeb](https://cdaweb.gsfc.nasa.gov/) through `Speasy.jl`
+- Data Access: [CDAWeb](https://cdaweb.gsfc.nasa.gov/) through [CDAWeb.jl](https://github.com/JuliaSpacePhysics/CDAWeb.jl)
 
 ## Supported Instruments
 
@@ -28,35 +28,26 @@ The SOHO data loader provides access to energetic particle data from multiple in
 
 ## Basic Usage
 
-List available SOHO datasets:
-
 ```@example soho
-using SolarEnergeticParticle
-
-datasets = get_datasets(:SOHO)
+using CDAWeb
+get_datasets("SOHO", "ERNE")
 ```
 
-Load SOHO data:
+ERNE High Energy Detector helium and proton fluxes:
 
 ```@example soho
-# ERNE High Energy Detector data
-dataset = "SOHO_ERNE-HED_L2-1MIN"
-tmin = "2021/10/28T06"
-tmax = "2021/10/29T12"
-data = get_data(dataset, tmin, tmax; verbose=true)
+hed = cda"SOHO_ERNE-HED_L2-1MIN"
+tmin, tmax = "2021-10-28T06", "2021-10-29T12"
+AH, PH = hed["AH"](tmin, tmax), hed["PH"](tmin, tmax)
 ```
-
-## Advanced Usage
 
 ```@example soho
 using SpacePhysicsMakie, CairoMakie
+using SpaceDataModel: DataVariable
 
-begin
-    tvars2plot = map([data.AH, data.PH]) do x
-        replace!(select_channel(x, 1:3:10), 0 => eps())
-    end
-    f = tplot(tvars2plot; plottype=Stairs)
-    ylims!.(f.axes, 5e-5, 8e-1)
-    f
-end
+# indexing a file variable gives a plain array; a `DataVariable` keeps times and coordinates
+f = Figure()
+linesplot(f[1, 1], replace(DataVariable(AH)[1:3:end, :], 0 => NaN))  # zeros cannot show on log axes
+linesplot(f[2, 1], replace(DataVariable(PH)[1:3:end, :], 0 => NaN))
+f
 ```

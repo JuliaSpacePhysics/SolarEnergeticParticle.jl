@@ -2,12 +2,12 @@
 
 ## Overview
 
-The STEREO data loader provides access to energetic particle data from the twin STEREO-A (Ahead) and STEREO-B (Behind) spacecraft.
+Energetic particle data come from the twin STEREO-A (Ahead) and STEREO-B (Behind) spacecraft.
 
 ### References
 
 - STEREO Mission: [Solar TErrestrial RElations Observatory](https://stereo.gsfc.nasa.gov/)
-- Data Access: Via [CDAWeb](https://cdaweb.gsfc.nasa.gov/) through `Speasy.jl`
+- Data Access: [CDAWeb](https://cdaweb.gsfc.nasa.gov/) through [CDAWeb.jl](https://github.com/JuliaSpacePhysics/CDAWeb.jl)
 
 ## Supported Instruments
 
@@ -26,30 +26,19 @@ The STEREO data loader provides access to energetic particle data from the twin 
 
 ## Basic Usage
 
-List available STEREO datasets:
-
 ```@example stereo
-using SolarEnergeticParticle
-
-stb_datasets = get_datasets(:STB)
+using CDAWeb
+get_datasets("STEREO", "HET")
 ```
 
-Load STEREO data:
+STEREO-A HET electron fluxes:
 
 ```@example stereo
-# STEREO-A HET data
-dataset = "STA_L1_HET"
-tmin = "2021/10/28T06"
-tmax = "2021/10/29T12"
-data = get_data(dataset, "Electron_Flux", tmin, tmax);
+e = cda"STA_L1_HET/Electron_Flux"("2021-10-28T06", "2021-10-29T12")
 ```
-
 
 ```@example stereo
 using SpacePhysicsMakie, CairoMakie
 
-tvars2plot = replace!(data.Electron_Flux, 0 => eps())
-f = tplot(tvars2plot; plottype=Stairs)
-ylims!.(f.axes, 5e-2, 2e2)
-f
+tplot(e)
 ```

@@ -1,75 +1,60 @@
-# Solar Energetic Particle Onset Analysis
-
-## Setup
-
-First, let's load the required packages and set up the analysis environment:
+# Onset Analysis
 
 ```@example onset
 using SolarEnergeticParticle
-using Dates
+using CDAWeb, Dates, TimeseriesUtilities
+using SpaceDataModel: DataVariable
 using SpacePhysicsMakie, CairoMakie
 ```
 
-The time range for the analysis is set as follows:
+Proton fluxes of [SOHO](missions/SOHO.md) ERNE-HED in the 28 October 2021 event, with a background interval before it:
 
 ```@example onset
-# Analysis time range (October 28-29, 2021 SEP event)
-tmin = DateTime(2021, 10, 28)
-tmax = DateTime(2021, 10, 29)
+tmin, tmax = DateTime(2021, 10, 28), DateTime(2021, 10, 29)
+bg = (DateTime(2021, 10, 28, 10), DateTime(2021, 10, 28, 12))
 
-# Define background time range (before the event)
-background_range = (DateTime(2021, 10, 28, 10, 0, 0), DateTime(2021, 10, 28, 12, 0, 0))
+PH = cda"SOHO_ERNE-HED_L2-1MIN/PH"(tmin, tmax)
+tplot(PH)
 ```
 
-## Load SEP Data
+## Onset and peak
 
-Load data from the [SOHO](./missions/SOHO.md) ERNE-HED instrument:
+[`find_onset`](@ref) computes the background mean and standard deviation over `bg` and searches for the onset after it; TimeseriesUtilities' `targmax` gives the peak time.
 
 ```@example onset
-data = get_data("SOHO_ERNE-HED_L2-1MIN", tmin, tmax)
-tplot(data.PH)
+I = DataVariable(PH)[4, :]  # channel 4; indexing a file variable gives a plain array
+onset = find_onset(I, bg)
 ```
 
-## Perform Onset Analysis
+```@example onset
+peak = targmax(I)
+```
 
-Now we can perform the onset determination analysis using [`find_onset`](@ref) and [`find_peak`](@ref) functions.
+The n-sigma method:
 
 ```@example onset
-# Select a specific channel
-channel = 4
-I = select_channel(data.PH, channel)
-peak = find_peak(I)
-onset = find_onset(I, background_range)
+find_onset(NSigma(), I, bg)
+```
+
+Every channel at once:
+
+```@example onset
+[o.time for o in find_onset(PH, bg)]
 ```
 
 ## Visualization
 
-Create a comprehensive plot showing the onset analysis results:
-
 ```@example onset
-f = tplot(I)
-
-_tvspan!(ax, tmin, tmax; kwargs...) = vspan!(ax, tmin, Dates.value.(tmax); kwargs...)
-
-function onsetplot!(ax, onset_time, bg_timerange, bg_mean, bg_std, peak_time = nothing, n = 2)
-    # Add background region if specified
-    onset_plot = tlines!(ax, onset_time, color = :red, label = "Onset $(round(onset_time, Second))")
-    bg_plot = _tvspan!(ax, bg_timerange...; alpha = 0.2, color = :gray, label = "Background")
-    bg_stat_plot1 = hlines!(bg_mean, linestyle = :dash, color = :cyan, label = "Mean of Background")
-    bg_stat_plot2 = hlines!(bg_mean + n*bg_std, linestyle = :dash, color = :cyan, label = "Mean + $n Std of Background")
-    plots = [onset_plot, bg_plot, bg_stat_plot1, bg_stat_plot2]
-
-    if peak_time !== nothing
-        peak_plot = tlines!(ax, peak_time, color = :orange, linewidth = 2, label = "Peak $(round(peak_time, Second))")
-        push!(plots, peak_plot)
-    end
-
-    return plots
-end
-
-onsetplot!(f.axes[1], onset..., peak[1])
-ylims!(1e-4, 5e-1)
-axislegend(f.axes[1]; position = :lt)
+f = Figure()
+ax = Axis(f[1, 1]; yscale = log10)
+linesplot!(ax, I)
+tvspan!(ax, bg...; color = (:gray, 0.2), label = "Background")
+hlines!(ax, onset.bg_mean; linestyle = :dash, color = :cyan, label = "Background mean")
+hlines!(ax, onset.bg_mean + 2onset.bg_std; linestyle = :dot, color = :cyan, label = "Mean + 2σ")
+tlines!(ax, DateTime(onset.time); color = :red, label = "Onset $(round(DateTime(onset.time), Second))")
+tlines!(ax, DateTime(peak); color = :orange, label = "Peak $(round(DateTime(peak), Second))")
+ylims!(ax, 1e-4, 5e-1)
+axislegend(ax; position = :lt)
 f
 ```
 
